@@ -14,7 +14,7 @@ const App = () => (
     <Header />
     <main className={getClassName('App__main')}>
 
-      <FlightCard legId="leg_1"/>
+      <FlightCard legId="leg_1" itinerary="it_1"/>
     </main>
   </div>
 );
