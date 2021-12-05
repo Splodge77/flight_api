@@ -62,13 +62,33 @@ export default class FlightCard extends Component {
 
     findDepartureAirportByLegId(legId){
         const leg = this.findLeg(legId);
-        if (typeof leg !== "undefined") return leg.departure_airport
+        if (typeof leg !== "undefined") return leg.departure_airport;
     }
 
     findArrivalAirportByLegId(legId){
         const leg = this.findLeg(legId);
-        if (typeof leg !== "undefined") return leg.arrival_airport
+        if (typeof leg !== "undefined") return leg.arrival_airport;
     }
+
+    findFlightDurationByLegId(legId){
+        const leg = this.findLeg(legId);
+        if (typeof leg != "undefined"){
+            const legInHours = leg.duration_mins / 60;
+            const rounded = parseFloat(legInHours).toFixed(2);
+            let time = new Date(0,0);
+            time.setSeconds(+rounded * 60 * 60);
+            time.toTimeString().slice(0, 8);
+            time = moment(time).format('hh:mm');
+            return time.toString();
+        }
+    }
+
+    // findFlightDataByIndexAndLegId(index, legId){
+    //     const leg = this.findLeg(legId);
+    //     if (typeof leg !== "undefined"){
+    //         return leg.index;
+    //     } 
+    // }
 
     // would prefer to write a function that finds flight information 
     // by using input paramaters e.g. findFlightInfo(departure_time)
@@ -91,6 +111,8 @@ export default class FlightCard extends Component {
                                     <td>{this.findDepartureTimeByLegId(this.props.legId)}</td>
                                     <td><Image src="../right-arrow.png"></Image></td>
                                     <td>{this.findArrivalTimeByLegId(this.props.legId)}</td>
+                                    <td></td>
+                                    <td>{this.findFlightDurationByLegId(this.props.legId)}</td>
                                 </tr>
                             </tbody>
                         </Table>
