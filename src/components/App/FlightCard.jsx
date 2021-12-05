@@ -47,16 +47,14 @@ export default class FlightCard extends Component {
     findDepartureTimeByLegId(legId){
         const leg = this.findLeg(legId);
         if (typeof leg !== "undefined") {
-            const timeStamp = moment(leg.departure_time).format('hh:mm');
-            return timeStamp;
+            return moment(leg.departure_time).format('hh:mm a');;
         }   
     }
 
     findArrivalTimeByLegId(legId){
         const leg = this.findLeg(legId);
         if (typeof leg !== "undefined") {
-            const timeStamp = moment(leg.arrival_time).format('hh:mm');
-            return timeStamp;
+            return moment(leg.arrival_time).format('hh:mm a');
         }
     }
 
@@ -73,13 +71,7 @@ export default class FlightCard extends Component {
     findFlightDurationByLegId(legId){
         const leg = this.findLeg(legId);
         if (typeof leg != "undefined"){
-            const legInHours = leg.duration_mins / 60;
-            const rounded = parseFloat(legInHours).toFixed(2);
-            let time = new Date(0,0);
-            time.setSeconds(+rounded * 60 * 60);
-            time.toTimeString().slice(0, 8);
-            time = moment(time).format('hh:mm');
-            return time.toString();
+            return moment.utc().startOf('day').add(leg.duration_mins, 'minutes').format('hh[h] mm[m]');
         }
     }
 
@@ -105,6 +97,8 @@ export default class FlightCard extends Component {
                                     <td>{this.findDepartureAirportByLegId(this.props.legId)}</td>
                                     <td></td>
                                     <td>{this.findArrivalAirportByLegId(this.props.legId)}</td>
+                                    <td></td>
+                                    <td>{this.findFlightDurationByLegId(this.props.legId)}</td>
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -112,7 +106,7 @@ export default class FlightCard extends Component {
                                     <td><Image src="../right-arrow.png"></Image></td>
                                     <td>{this.findArrivalTimeByLegId(this.props.legId)}</td>
                                     <td></td>
-                                    <td>{this.findFlightDurationByLegId(this.props.legId)}</td>
+                                    <td></td>
                                 </tr>
                             </tbody>
                         </Table>
