@@ -1,7 +1,8 @@
 import axios from 'axios';
 import React, {Component} from 'react';
-import {Card, Table, Image} from 'react-bootstrap';
+import {Image} from 'react-bootstrap';
 import moment from 'moment';
+import BpkCard from 'bpk-component-card';
 
 export default class FlightCard extends Component {
 
@@ -10,6 +11,7 @@ export default class FlightCard extends Component {
             itineraries: [],
             legs: []
         },
+        currentItinerary: {},
         leg1: {},
         leg2: {}
     }
@@ -32,10 +34,16 @@ export default class FlightCard extends Component {
         return leg;
     }
 
+
     findItineraryById(itineraryId){
         const itineraries = this.state.flights.itineraries;
         const itinerary = itineraries.find(itinerary => itinerary.id === itineraryId);
         return itinerary;
+    }
+
+    findItinerary(itineraryId){
+        const itinerary = this.findItineraryById(itineraryId);
+        if (typeof itinerary !== "undefined") this.state.currentItinerary = itinerary;
     }
 
     findLegsByItinerary(itineraryId){
@@ -51,36 +59,72 @@ export default class FlightCard extends Component {
     }
 
     formatDuration(leg){
-        return moment.utc().startOf('day').add(leg.duration_mins, 'minutes').format('hh[h] mm[m]');
+        return moment.utc().startOf('day')
+        .add(leg.duration_mins, 'minutes').format('hh[h] mm[m]');
+    }
+
+    isDirect(leg){
+        if (leg.stops === 0){
+            return "Direct";
+        } else {
+            return leg.stops + " stops";
+        }
+    }
+
+    findPrice(itineraryId){
+        const itinerary = this.findItineraryById(itineraryId);
+        if (typeof itinerary !== "undefined"){
+            return itinerary.price;
+        }
     }
 
     render() {
         return (
             <div>
-                <Card>
-                    <Card.Body>
-                        <Table responsive striped bordered hover>
-                            {this.findLegsByItinerary(this.props.itinerary)}
-                            {console.log(this.state.leg1)}
-                            <tbody>
-                                <tr>
-                                    <td>{this.state.leg1.airline_id}</td>
-                                    <td>{this.state.leg1.departure_airport}</td>
-                                    <td></td>
-                                    <td>{this.state.leg1.arrival_airport}</td>
-                                    <td></td>
-                                    <td>{this.formatDuration(this.state.leg1)}</td>
-                                </tr>
-                                <tr>
-                                    <td></td>
-                                    <td>{this.formatTime(this.state.leg1)}</td>
-                                    <td><Image src="../right-arrow.png"></Image></td>
-                                    <td>{this.formatTime(this.state.leg1)}</td>
-                                </tr>
-                            </tbody>
-                        </Table>
-                    </Card.Body>
-                </Card>
+                {this.findLegsByItinerary(this.props.itinerary)}
+                {this.findItinerary(this.props.itinerary)}
+                <BpkCard style={{marginBottom: '1em'}}>
+                    <table style={{fontSize: '14px', width: '0 auto'}}>
+                        <tbody>
+
+                            <tr>
+                                <td rowSpan={2}>{this.state.leg1.airline_id}</td>
+                                <td>{this.state.leg1.departure_airport}</td>
+                                <td></td>
+                                <td>{this.state.leg1.arrival_airport}</td>
+                                <td></td>
+                                <td>{this.formatDuration(this.state.leg1)}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.formatTime(this.state.leg1)}</td>
+                                <td><Image src="../right-arrow.png"></Image></td>
+                                <td>{this.formatTime(this.state.leg1)}</td>
+                                <td></td>
+                                <td>{this.isDirect(this.state.leg1)}</td>
+                            </tr>
+
+                            <tr>
+                                <td rowSpan={2}>{this.state.leg2.airline_id}</td>
+                                <td>{this.state.leg2.departure_airport}</td>
+                                <td></td>
+                                <td>{this.state.leg2.arrival_airport}</td>
+                                <td></td>
+                                <td>{this.formatDuration(this.state.leg2)}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.formatTime(this.state.leg2)}</td>
+                                <td><Image src="../right-arrow.png"></Image></td>
+                                <td>{this.formatTime(this.state.leg2)}</td>
+                                <td></td>
+                                <td>{this.isDirect(this.state.leg2)}</td>
+                            </tr>
+                            <tr>
+                                <td>{this.findPrice(this.props.itinerary)}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </BpkCard>
             </div>
         )
     }
